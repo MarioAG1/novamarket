@@ -3,3 +3,12 @@
 @plugin "daisyui" {
   themes: dark --default;
 }
+@theme {
+  --font-montserrat: 'montserrat', sans-serif;
+}
+@layer base {
+  @font-face {
+    font-family: 'Montserrat';
+    src: url('../public/assets/fonts/MontserratAlternates-Medium.ttf');
+  }
+}
