@@ -11,11 +11,13 @@ export class ProductImagePipe implements PipeTransform {
     if (!value) {
       return './assets/images/no-image.jpg';
     }
-
     if (typeof value === 'string') {
       return `${baseUrl}/files/product/${value}`;
     }
-
-    return `${baseUrl}/files/product/${value[0]}`;
+    const imagenInicial = value[0];
+    if (!imagenInicial) {
+      return './assets/images/no-image.jpg';
+    }
+    return `${baseUrl}/files/product/${imagenInicial}`;
   }
 }
