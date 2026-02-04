@@ -1,1 +1,20 @@
-<p>product-page works!</p>,
+@if (productIdSlugResource.isLoading()) {
+  <div class="flex justify-center items-center h-screen">
+    <span class="loading loading-spinner loading-lg"></span>
+  </div>
+}
+
+<!-- Producto -->
+@if (productIdSlugResource.hasValue()) {
+  <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+    <!-- Imagenes -->
+    <p>Imagenes</p>
+    <div>
+      <h2>{{ productIdSlugResource.value().title }}</h2>
+      <div class="divider"></div>
+      <p>
+        {{ productIdSlugResource.value().description }}
+      </p>
+    </div>
+  </div>
+}

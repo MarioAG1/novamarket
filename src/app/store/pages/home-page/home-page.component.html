@@ -5,6 +5,6 @@
   @for (product of productsResource.value()?.products ?? []; track $index) {
     <product-card [product]="product"></product-card>
   } @empty {
-    <p>Cargando ...</p>
+    <span class="loading loading-spinner loading-lg"></span>
   }
 </div>
