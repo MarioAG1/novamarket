@@ -8,7 +8,7 @@
 @if (productIdSlugResource.hasValue()) {
   <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
     <!-- Imagenes -->
-    <product-carousel [images]="productIdSlugResource.value()?.images ?? []"></product-carousel>
+    <product-carousel [images]="productIdSlugResource.value()!.images"></product-carousel>
     <div>
       <h2>{{ productIdSlugResource.value().title }}</h2>
       <div class="divider"></div>
