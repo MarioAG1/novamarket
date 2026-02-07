@@ -10,3 +10,8 @@
     <span class="loading loading-spinner loading-lg"></span>
   }
 </div>
+
+<app-pagination
+  [pages]="productGenderResource.value()?.pages ?? 0"
+  [currentPage]="paginationService.currentPage()"
+></app-pagination>
