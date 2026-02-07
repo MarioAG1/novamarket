@@ -1,8 +1,10 @@
 import { Component, inject } from '@angular/core';
-import { rxResource } from '@angular/core/rxjs-interop';
+import { rxResource, toSignal } from '@angular/core/rxjs-interop';
+import { ActivatedRoute } from '@angular/router';
 import { ProductCardComponent } from '@products/components/product-card/product-card.component';
 import { ProductsService } from '@products/services/products.service';
 import { PaginationComponent } from '@shared/components/pagination/pagination.component';
+import { map } from 'rxjs';
 // import { ProductCardComponent } from '../../../products/components/product-card/product-card.component';
 
 @Component({
@@ -12,11 +14,25 @@ import { PaginationComponent } from '@shared/components/pagination/pagination.co
 })
 export class HomePageComponent {
   productsService = inject(ProductsService);
+  activatedRoute = inject(ActivatedRoute);
 
+  currentPage = toSignal(
+    this.activatedRoute.queryParamMap.pipe(
+      map((params) => (params.get('page') ? +params.get('page')! : 1)),
+      map((page) => (isNaN(page) ? 1 : page)),
+    ),
+    {
+      initialValue: 1,
+    },
+  );
+
+  //Con estas ultimas modificaciones hacemos que segun que pagina estemos, cambie el contenido
   productsResource = rxResource({
-    params: () => ({}),
+    params: () => ({ page: this.currentPage() - 1 }),
     stream: ({ params }) => {
-      return this.productsService.getProducts({});
+      return this.productsService.getProducts({
+        offset: params.page * 9,
+      });
     },
   });
 }
