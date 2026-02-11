@@ -39,25 +39,18 @@ export class AuthService {
   token = computed(() => this._token());
 
   login(email: string, password: string): Observable<boolean> {
+    // Si se pone {} despues de la flecha hay que poner el return, en el tap da lo mismo
     return this.http
       .post<AuthResponse>(`${baseUrl}/auth/login`, {
         email: email,
         password: password,
       })
       .pipe(
-        tap((resp) => {
-          this._user.set(resp.user);
-          this._authStatus.set('authenticated');
-          this._token.set(resp.token);
-
-          localStorage.setItem('token', resp.token);
+        map((resp) => {
+          return this.handleLoginSuccess(resp);
         }),
-        map(() => true),
         catchError((error: any) => {
-          this._user.set(null);
-          this._authStatus.set('not-authenticated');
-          this._token.set(null);
-          return of(false);
+          return this.handleLoginError(error);
         }),
       );
   }
@@ -66,9 +59,11 @@ export class AuthService {
     const token = localStorage.getItem('token');
 
     if (!token) {
+      this.logout();
       return of(false);
     }
 
+    // Si se pone {} despues de la flecha hay que poner el return, en el tap da lo mismo
     return this.http
       .get<AuthResponse>(`${baseUrl}/auth/check-status`, {
         headers: {
@@ -76,20 +71,36 @@ export class AuthService {
         },
       })
       .pipe(
-        tap((resp) => {
-          this._user.set(resp.user);
-          this._authStatus.set('authenticated');
-          this._token.set(resp.token);
-
-          localStorage.setItem('token', resp.token);
+        map((resp) => {
+          return this.handleLoginSuccess(resp);
         }),
-        map(() => true),
         catchError((error: any) => {
-          this._user.set(null);
-          this._authStatus.set('not-authenticated');
-          this._token.set(null);
-          return of(false);
+          return this.handleLoginError(error);
         }),
       );
+  }
+
+  logout() {
+    this._authStatus.set('not-authenticated');
+    this._user.set(null);
+    this._token.set(null);
+
+    localStorage.removeItem('token');
+  }
+
+  // Se podria poner en vez de resp, {user, token} para destructurarlo
+  private handleLoginSuccess(resp: AuthResponse) {
+    this._user.set(resp.user);
+    this._authStatus.set('authenticated');
+    this._token.set(resp.token);
+
+    localStorage.setItem('token', resp.token);
+
+    return true;
+  }
+
+  private handleLoginError(error: any) {
+    this.logout();
+    return of(false);
   }
 }
