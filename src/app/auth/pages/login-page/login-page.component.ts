@@ -1,6 +1,6 @@
 import { Component, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '@auth/services/auth.service';
 
 @Component({
@@ -13,6 +13,7 @@ export class LoginPageComponent {
   hasError = signal(false);
   isPosting = signal(false);
   authService = inject(AuthService);
+  router = inject(Router);
 
   loginForm = this.fb.group({
     email: ['', [Validators.required, Validators.email]],
@@ -28,8 +29,15 @@ export class LoginPageComponent {
       return;
     }
     const { email = '', password = '' } = this.loginForm.value;
-    this.authService.login(email!, password!).subscribe((resp) => {
-      console.log(resp);
+    this.authService.login(email!, password!).subscribe((isAuthenticated) => {
+      if (isAuthenticated) {
+        this.router.navigateByUrl('/');
+        return;
+      }
+      this.hasError.set(true);
+      setTimeout(() => {
+        this.hasError.set(false);
+      }, 5000);
     });
   }
 }
