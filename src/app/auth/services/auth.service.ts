@@ -66,9 +66,9 @@ export class AuthService {
     // Si se pone {} despues de la flecha hay que poner el return, en el tap da lo mismo
     return this.http
       .get<AuthResponse>(`${baseUrl}/auth/check-status`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        // headers: {
+        //   Authorization: `Bearer ${token}`,
+        // },
       })
       .pipe(
         map((resp) => {
@@ -85,7 +85,7 @@ export class AuthService {
     this._user.set(null);
     this._token.set(null);
 
-    localStorage.removeItem('token');
+    // localStorage.removeItem('token');
   }
 
   // Se podria poner en vez de resp, {user, token} para destructurarlo
