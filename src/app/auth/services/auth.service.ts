@@ -55,6 +55,23 @@ export class AuthService {
       );
   }
 
+  register(email: string, password: string, fullName: string): Observable<boolean> {
+    return this.http
+      .post<AuthResponse>(`${baseUrl}/auth/register`, {
+        email: email,
+        password: password,
+        fullName: fullName,
+      })
+      .pipe(
+        map((resp) => {
+          return this.handleLoginSuccess(resp);
+        }),
+        catchError((error: any) => {
+          return this.handleLoginError(error);
+        }),
+      );
+  }
+
   checkStatus(): Observable<boolean> {
     const token = localStorage.getItem('token');
 
@@ -85,7 +102,7 @@ export class AuthService {
     this._user.set(null);
     this._token.set(null);
 
-    // localStorage.removeItem('token');
+    localStorage.removeItem('token');
   }
 
   // Se podria poner en vez de resp, {user, token} para destructurarlo
