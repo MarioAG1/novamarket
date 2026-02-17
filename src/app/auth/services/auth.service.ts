@@ -37,6 +37,7 @@ export class AuthService {
 
   user = computed(() => this._user());
   token = computed(() => this._token());
+  isAdmin = computed(() => this._user()?.roles.includes('admin') ?? false);
 
   login(email: string, password: string): Observable<boolean> {
     // Si se pone {} despues de la flecha hay que poner el return, en el tap da lo mismo
