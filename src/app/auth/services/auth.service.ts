@@ -17,6 +17,7 @@ export class AuthService {
   private _user = signal<User | null>(null);
   private _token = signal<string | null>(localStorage.getItem('token'));
 
+  private authCache = new Map<string, boolean>();
   private http = inject(HttpClient);
 
   checkStatusResource = rxResource({
@@ -81,6 +82,10 @@ export class AuthService {
       return of(false);
     }
 
+    if (this.authCache.has(token)) {
+      return of(this.authCache.get(token)!);
+    }
+
     // Si se pone {} despues de la flecha hay que poner el return, en el tap da lo mismo
     return this.http
       .get<AuthResponse>(`${baseUrl}/auth/check-status`, {
@@ -89,6 +94,9 @@ export class AuthService {
         // },
       })
       .pipe(
+        tap(() => {
+          return this.authCache.set(token, true);
+        }),
         map((resp) => {
           return this.handleLoginSuccess(resp);
         }),
