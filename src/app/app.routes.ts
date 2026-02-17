@@ -8,6 +8,10 @@ export const routes: Routes = [
     canMatch: [notAuthenticatedGuard],
   },
   {
+    path: 'admin',
+    loadChildren: () => import('./admin/admin-dashboard.routes'),
+  },
+  {
     path: '',
     loadChildren: () => import('./store/store.routes'),
   },
