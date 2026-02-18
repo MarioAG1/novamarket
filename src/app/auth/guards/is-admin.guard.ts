@@ -8,5 +8,8 @@ export const isAdminGuard: CanMatchFn = async (route: Route, segments: UrlSegmen
   const router = inject(Router);
 
   await firstValueFrom(authService.checkStatus());
-  return authService.isAdmin();
+  if (!authService.isAdmin()) {
+    return router.createUrlTree(['/']);
+  }
+  return true;
 };

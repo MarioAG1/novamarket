@@ -4,6 +4,11 @@
   <span class="text-accent">{{ productsResource.value()?.count }}</span>
 </h3>
 <div class="divider"></div>
+@if (productsResource.isLoading()) {
+  <div class="flex justify-center items-center h-screen">
+    <span class="loading loading-spinner loading-lg"></span>
+  </div>
+}
 <div class="flex gap-2 items-center justify-between h-20">
   <app-pagination
     [pages]="productsResource.value()?.pages ?? 0"
