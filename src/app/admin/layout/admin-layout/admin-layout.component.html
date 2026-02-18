@@ -12,16 +12,19 @@
   }
 </style>
 <div
-  class="bg-slate-800 overflow-y-scroll w-screen h-screen antialiased text-slate-300 selection:bg-blue-600 selection:text-white"
+  class="bg-slate-800 overflow-x-hidden overflow-y-scroll w-screen h-screen antialiased text-slate-300"
 >
   <div class="flex flex-col relative w-screen">
     <div
       id="menu"
-      class="bg-gray-900 min-h-screen z-10 text-slate-300 w-64 fixed left-0 h-screen overflow-y-scroll"
+      class="bg-gray-900 min-h-screen z-10 text-slate-300 w-79 fixed left-0 h-screen overflow-y-scroll"
     >
       <div id="logo" class="my-4 px-6">
-        <h1 class="text-lg md:text-2xl font-bold text-white">
-          Dash<span class="text-blue-500">8</span>.
+        <h1
+          routerLink="/"
+          class="text-lg md:text-xl font-bold text-white font-montserrat cursor-pointer btn btn-ghost w-full"
+        >
+          NovaMarket<span class="text-blue-500">| Admin</span>
         </h1>
         <p class="text-slate-500 text-sm">Manage your actions and activities</p>
       </div>
@@ -98,7 +101,7 @@
       </div>
     </div>
   </div>
-  <div class="flex-1 ml-64 pt-5 px-5">
+  <div class="flex-1 ml-80 pt-5 px-5">
     <router-outlet></router-outlet>
   </div>
 </div>
