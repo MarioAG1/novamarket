@@ -19,7 +19,7 @@ export class ProductAdminPageComponent {
   productResource = rxResource({
     params: () => ({ id: this.productId }),
     stream: ({ params }) => {
-      return this.productService.getProductByIdSlug(params.id);
+      return this.productService.getProductById(params.id);
     },
   });
 
