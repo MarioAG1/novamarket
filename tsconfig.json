@@ -10,6 +10,7 @@
       "@products/*": ["./src/app/products/*"],
       "@shared/*": ["./src/app/shared/*"],
       "@store/*": ["./src/app/store/*"],
+      "@utils/*": ["./src/app/utils/*"]
     },
     "strict": true,
     "noImplicitOverride": true,
