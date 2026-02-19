@@ -35,6 +35,16 @@ export class ProductDetailsComponent implements OnInit {
     this.productForm.patchValue({ tags: formLike.tags?.join(',') });
   }
 
+  onSizeClick(size: string) {
+    const currentsizes = this.productForm.value.sizes ?? [];
+    if (currentsizes.includes(size)) {
+      currentsizes.splice(currentsizes.indexOf(size), 1);
+    } else {
+      currentsizes.push(size);
+    }
+    this.productForm.patchValue({ sizes: currentsizes });
+  }
+
   onSumbit() {
     console.log(this.productForm.value);
   }
