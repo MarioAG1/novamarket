@@ -60,7 +60,7 @@ export class ProductsService {
       .pipe(tap((resp) => this.productCache.set(id, resp)));
   }
 
-  updateProduct(productLike: Partial<Product>) {
-    console.log('actualizando producto');
+  updateProduct(id: string, productLike: Partial<Product>): Observable<Product> {
+    return this.http.patch<Product>(`${baseUrl}/products/${id}`, productLike);
   }
 }
