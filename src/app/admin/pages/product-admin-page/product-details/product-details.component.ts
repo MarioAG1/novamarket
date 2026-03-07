@@ -5,6 +5,7 @@ import { Product } from '@products/interfaces/product.interface';
 import { FormUtils } from '@utils/form-utils';
 import { FormErrorLabelComponent } from '@shared/components/form-error-label/form-error-label.component';
 import { ProductsService } from '@products/services/products.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'product-details',
@@ -15,6 +16,7 @@ export class ProductDetailsComponent implements OnInit {
   product = input.required<Product>();
   productService = inject(ProductsService);
   sizes = ['XS', 'S', 'M', 'L', 'XL', 'XXL'];
+  router = inject(Router);
 
   fb = inject(FormBuilder);
   productForm = this.fb.group({
@@ -64,8 +66,17 @@ export class ProductDetailsComponent implements OnInit {
           .split(',')
           .map((tag) => tag.trim()) ?? [],
     };
-    this.productService.updateProduct(this.product().id, productLike).subscribe((producto) => {
-      console.log('Producto actualizado');
-    });
+
+    if (this.product().id === 'new') {
+      //Crear producto
+      this.productService.createProduct(productLike).subscribe((product) => {
+        console.log('Producto creado');
+        return this.router.navigate(['/admin/products', product.id]);
+      });
+    } else {
+      this.productService.updateProduct(this.product().id, productLike).subscribe((producto) => {
+        console.log('Producto actualizado');
+      });
+    }
   }
 }

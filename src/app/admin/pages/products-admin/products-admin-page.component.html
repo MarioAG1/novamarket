@@ -14,21 +14,24 @@
     <span class="loading loading-spinner loading-lg"></span>
   </div>
 }
-<div class="flex gap-2 items-center justify-between h-20">
-  <app-pagination
-    [pages]="productsResource.value()?.pages ?? 0"
-    [currentPage]="paginationService.currentPage()"
-  ></app-pagination>
-  <select
-    class="select select-bordered w-32"
-    (change)="productsPerPage.set(+selectPerPage.value)"
-    #selectPerPage
-  >
-    <option value="10">10</option>
-    <option value="20">20</option>
-    <option value="50">50</option>
-    <option value="100">100</option>
-  </select>
+<div class="flex flex-row justify-between items-center h-20">
+  <div class="flex flex-row gap-2">
+    <app-pagination
+      [pages]="productsResource.value()?.pages ?? 0"
+      [currentPage]="paginationService.currentPage()"
+    ></app-pagination>
+    <select
+      class="select select-bordered w-32"
+      (change)="productsPerPage.set(+selectPerPage.value)"
+      #selectPerPage
+    >
+      <option value="10">10</option>
+      <option value="20">20</option>
+      <option value="50">50</option>
+      <option value="100">100</option>
+    </select>
+  </div>
+  <button class="btn btn-primary" routerLink="/admin/products/new">Nuevo Producto</button>
 </div>
 <!-- Listado -->
 <product-table [products]="productsResource.value()?.products ?? []"></product-table>
