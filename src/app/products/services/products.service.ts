@@ -61,6 +61,30 @@ export class ProductsService {
   }
 
   updateProduct(id: string, productLike: Partial<Product>): Observable<Product> {
-    return this.http.patch<Product>(`${baseUrl}/products/${id}`, productLike);
+    return this.http.patch<Product>(`${baseUrl}/products/${id}`, productLike).pipe(
+      tap((product) => {
+        return this.updateProductCache(product);
+      }),
+    );
+  }
+
+  updateProductCache(product: Product) {
+    const productId = product.id;
+
+    // Se puede llegar directamente
+    this.productCache.set(productId, product);
+
+    // Hay que barrer todos los productos y buscar el suyo, si lo encuentra lo actualiza, si no pues lo mantiene sin modificar nada
+    this.productsCache.forEach((productResponse) => {
+      productResponse.products = productResponse.products.map((currentProduct) => {
+        if (currentProduct.id === productId) {
+          return product;
+        } else {
+          return currentProduct;
+        }
+      });
+    });
+
+    console.log('Cache actualizado');
   }
 }
