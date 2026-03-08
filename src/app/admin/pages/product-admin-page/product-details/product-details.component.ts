@@ -1,4 +1,4 @@
-import { Component, inject, input, OnInit } from '@angular/core';
+import { Component, inject, input, OnInit, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ProductCarouselComponent } from '@products/components/product-carousel/product-carousel.component';
 import { Product } from '@products/interfaces/product.interface';
@@ -6,6 +6,7 @@ import { FormUtils } from '@utils/form-utils';
 import { FormErrorLabelComponent } from '@shared/components/form-error-label/form-error-label.component';
 import { ProductsService } from '@products/services/products.service';
 import { Router } from '@angular/router';
+import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'product-details',
@@ -17,6 +18,8 @@ export class ProductDetailsComponent implements OnInit {
   productService = inject(ProductsService);
   sizes = ['XS', 'S', 'M', 'L', 'XL', 'XXL'];
   router = inject(Router);
+  wasSaved = signal(false);
+  wasCreated = signal(false);
 
   fb = inject(FormBuilder);
   productForm = this.fb.group({
@@ -50,6 +53,38 @@ export class ProductDetailsComponent implements OnInit {
     this.productForm.patchValue({ sizes: currentsizes });
   }
 
+  async wasCreatedCheck(productLike: Partial<Product>) {
+    //Crear producto
+    await firstValueFrom(this.productService.createProduct(productLike));
+
+    // Navegas hasta la ruta del nuevo producto
+    // this.router.navigate(['/admin/products', product.id]);
+
+    this.wasCreatedToggle();
+  }
+
+  async wasSavedCheck(productLike: Partial<Product>) {
+    //Actualizar producto
+    await firstValueFrom(this.productService.updateProduct(this.product().id, productLike));
+
+    this.wasSavedToggle();
+  }
+
+  wasCreatedToggle() {
+    this.wasCreated.set(true);
+    setTimeout(() => {
+      this.wasCreated.set(false);
+      this.router.navigate(['/admin/products']);
+    }, 3000);
+  }
+
+  wasSavedToggle() {
+    this.wasSaved.set(true);
+    setTimeout(() => {
+      this.wasSaved.set(false);
+    }, 3000);
+  }
+
   onSubmit() {
     const isValid = this.productForm.valid;
     this.productForm.markAllAsTouched();
@@ -68,15 +103,9 @@ export class ProductDetailsComponent implements OnInit {
     };
 
     if (this.product().id === 'new') {
-      //Crear producto
-      this.productService.createProduct(productLike).subscribe((product) => {
-        console.log('Producto creado');
-        return this.router.navigate(['/admin/products', product.id]);
-      });
+      this.wasCreatedCheck(productLike);
     } else {
-      this.productService.updateProduct(this.product().id, productLike).subscribe((producto) => {
-        console.log('Producto actualizado');
-      });
+      this.wasSavedCheck(productLike);
     }
   }
 }
