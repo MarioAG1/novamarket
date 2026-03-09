@@ -20,6 +20,8 @@ export class ProductDetailsComponent implements OnInit {
   router = inject(Router);
   wasSaved = signal(false);
   wasCreated = signal(false);
+  tempImages = signal<string[]>([]);
+  imagesFileList = signal<FileList | undefined>(undefined);
 
   fb = inject(FormBuilder);
   productForm = this.fb.group({
@@ -107,5 +109,19 @@ export class ProductDetailsComponent implements OnInit {
     } else {
       this.wasSavedCheck(productLike);
     }
+  }
+
+  //Imágenes
+  onFilesChanged(event: Event) {
+    const fileList = (event.target as HTMLInputElement).files;
+
+    // Esto sirve si luego quieres subir los archivos reales al servidor.
+    this.imagesFileList.set(fileList ?? undefined);
+
+    const imageUrls = Array.from(fileList ?? []).map((file) => {
+      return URL.createObjectURL(file);
+    });
+
+    this.tempImages.set(imageUrls);
   }
 }
