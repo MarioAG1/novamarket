@@ -8,7 +8,7 @@
         <img
           [src]="image | productImage"
           alt="Producto"
-          class="w-full object-cover animate-fadeIn"
+          class="w-full h-full object-contain animate-fadeIn"
         />
       </div>
     } @empty {
@@ -16,7 +16,7 @@
         <img
           [src]="null | productImage"
           alt="Producto"
-          class="w-full object-cover animate-fadeIn"
+          class="w-full h-full object-contain animate-fadeIn"
         />
       </div>
     }
