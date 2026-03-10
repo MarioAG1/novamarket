@@ -61,7 +61,7 @@ export class ProductDetailsComponent implements OnInit {
 
   async wasCreatedCheck(productLike: Partial<Product>) {
     //Crear producto
-    await firstValueFrom(this.productService.createProduct(productLike));
+    await firstValueFrom(this.productService.createProduct(productLike, this.imagesFileList()));
 
     // Navegas hasta la ruta del nuevo producto
     // this.router.navigate(['/admin/products', product.id]);
@@ -71,7 +71,9 @@ export class ProductDetailsComponent implements OnInit {
 
   async wasSavedCheck(productLike: Partial<Product>) {
     //Actualizar producto
-    await firstValueFrom(this.productService.updateProduct(this.product().id, productLike));
+    await firstValueFrom(
+      this.productService.updateProduct(this.product().id, productLike, this.imagesFileList()),
+    );
 
     this.wasSavedToggle();
   }

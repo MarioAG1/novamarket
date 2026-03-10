@@ -2,7 +2,7 @@ import { User } from '@auth/interfaces/user.interface';
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Gender, Product, ProductsResponse } from '@products/interfaces/product.interface';
-import { delay, forkJoin, map, Observable, of, retry, tap } from 'rxjs';
+import { delay, forkJoin, map, Observable, of, retry, switchMap, tap } from 'rxjs';
 import { environment } from 'src/environments/environment';
 
 const baseUrl = environment.baseUrl;
@@ -79,12 +79,33 @@ export class ProductsService {
       .pipe(tap((resp) => this.productCache.set(id, resp)));
   }
 
-  updateProduct(id: string, productLike: Partial<Product>): Observable<Product> {
-    return this.http.patch<Product>(`${baseUrl}/products/${id}`, productLike).pipe(
+  updateProduct(
+    id: string,
+    productLike: Partial<Product>,
+    imagesFileList?: FileList,
+  ): Observable<Product> {
+    const currentImages = productLike.images ?? [];
+
+    return this.uploadImages(imagesFileList).pipe(
+      // Disparamos la carga de las imágenes
+      map((imagesNames) => {
+        return { ...productLike, images: [...currentImages, ...imagesNames] };
+      }),
+      // Si todo sale bien hacemos la petición http
+      switchMap((updatedProduct) => {
+        return this.http.patch<Product>(`${baseUrl}/products/${id}`, updatedProduct);
+      }),
+      // Actualizamos la cache
       tap((product) => {
         return this.updateProductCache(product);
       }),
     );
+
+    // return this.http.patch<Product>(`${baseUrl}/products/${id}`, productLike).pipe(
+    //   tap((product) => {
+    //     return this.updateProductCache(product);
+    //   }),
+    // );
   }
 
   updateProductCache(product: Product) {
@@ -107,7 +128,7 @@ export class ProductsService {
     console.log('Cache actualizado');
   }
 
-  createProduct(productLike: Partial<Product>): Observable<Product> {
+  createProduct(productLike: Partial<Product>, imagesFileList?: FileList): Observable<Product> {
     return this.http.post<Product>(`${baseUrl}/products`, productLike).pipe(
       tap((product) => {
         return this.updateProductCache(product);
