@@ -2,7 +2,7 @@ import { User } from '@auth/interfaces/user.interface';
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Gender, Product, ProductsResponse } from '@products/interfaces/product.interface';
-import { delay, Observable, of, tap } from 'rxjs';
+import { delay, forkJoin, map, Observable, of, retry, tap } from 'rxjs';
 import { environment } from 'src/environments/environment';
 
 const baseUrl = environment.baseUrl;
@@ -111,6 +111,36 @@ export class ProductsService {
     return this.http.post<Product>(`${baseUrl}/products`, productLike).pipe(
       tap((product) => {
         return this.updateProductCache(product);
+      }),
+    );
+  }
+
+  // Tomar FileList y subirla
+  uploadImages(images?: FileList): Observable<string[]> {
+    if (!images) {
+      return of([]);
+    }
+    const uploadObservables = Array.from(images).map((imageFile) => {
+      return this.uploadImage(imageFile);
+    });
+
+    // Le mandas un arreglo de observables y que todas emitan un valor y si no manda una excepción
+    return forkJoin(uploadObservables).pipe(
+      tap((imagesNames) => {
+        return console.log(imagesNames);
+      }),
+    );
+  }
+
+  uploadImage(imageFile: File): Observable<string> {
+    const formData = new FormData();
+    formData.append('file', imageFile);
+
+    // Si lo dejamos asi obtenemos secureUrl y el fileName las 2 cosas y solo quiero fileName
+    // return this.http.post(`${baseUrl}/files/product`, formData);
+    return this.http.post<{ fileName: string }>(`${baseUrl}/files/product`, formData).pipe(
+      map((resp) => {
+        return resp.fileName;
       }),
     );
   }
