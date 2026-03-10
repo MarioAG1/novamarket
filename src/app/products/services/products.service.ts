@@ -111,11 +111,11 @@ export class ProductsService {
   updateProductCache(product: Product) {
     const productId = product.id;
 
-    // Se puede llegar directamente
+    // Cache individual
     this.productCache.set(productId, product);
 
-    // Hay que barrer todos los productos y buscar el suyo, si lo encuentra lo actualiza, si no pues lo mantiene sin modificar nada
     this.productsCache.forEach((productResponse) => {
+      // Hay que barrer todos los productos y el que coincida lo actualiza el que no lo deja tal cual..
       productResponse.products = productResponse.products.map((currentProduct) => {
         if (currentProduct.id === productId) {
           return product;
@@ -123,13 +123,29 @@ export class ProductsService {
           return currentProduct;
         }
       });
-    });
 
-    console.log('Cache actualizado');
+      // Si en vez de actualizarlo, queremos crearlo, comprobamos si existe en la lista y si no, lo añadimos
+      const exists = productResponse.products.some((newProduct) => newProduct.id === productId);
+
+      if (!exists) {
+        productResponse.products = [product, ...productResponse.products];
+      }
+    });
   }
 
   createProduct(productLike: Partial<Product>, imagesFileList?: FileList): Observable<Product> {
-    return this.http.post<Product>(`${baseUrl}/products`, productLike).pipe(
+    const currentImages = productLike.images ?? [];
+
+    return this.uploadImages(imagesFileList).pipe(
+      // Disparamos la carga de las imágenes
+      map((imagesNames) => {
+        return { ...productLike, images: [...currentImages, ...imagesNames] };
+      }),
+      // Si todo sale bien hacemos la petición http
+      switchMap((createdProduct) => {
+        return this.http.post<Product>(`${baseUrl}/products/`, createdProduct);
+      }),
+      // Actualizamos la cache
       tap((product) => {
         return this.updateProductCache(product);
       }),
