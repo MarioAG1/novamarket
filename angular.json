@@ -6,7 +6,7 @@
   },
   "newProjectRoot": "projects",
   "projects": {
-    "teslo-shop": {
+    "nova-market": {
       "projectType": "application",
       "schematics": {},
       "root": "",
@@ -62,10 +62,10 @@
           "builder": "@angular/build:dev-server",
           "configurations": {
             "production": {
-              "buildTarget": "teslo-shop:build:production"
+              "buildTarget": "nova-market:build:production"
             },
             "development": {
-              "buildTarget": "teslo-shop:build:development"
+              "buildTarget": "nova-market:build:development"
             }
           },
           "defaultConfiguration": "development"
